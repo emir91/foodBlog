@@ -18,83 +18,38 @@ app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 const Recipes = require('./models/Recipes')
 
-const recipes = [
-  {
-    name: "Pizza Napolitana",
-    image:
-      "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    name: "Homemade Burger",
-    image:
-      "https://images.unsplash.com/photo-1496930666207-e76e8253a950?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
 
-  {
-    name: "Veggy Pasta",
-    image:
-      "https://images.unsplash.com/photo-1587206668283-c21d974993c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    name: "Pizza Napolitana",
-    image:
-      "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    name: "Homemade Burger",
-    image:
-      "https://images.unsplash.com/photo-1496930666207-e76e8253a950?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-
-  {
-    name: "Veggy Pasta",
-    image:
-      "https://images.unsplash.com/photo-1587206668283-c21d974993c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    name: "Pizza Napolitana",
-    image:
-      "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    name: "Homemade Burger",
-    image:
-      "https://images.unsplash.com/photo-1496930666207-e76e8253a950?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-
-  {
-    name: "Veggy Pasta",
-    image:
-      "https://images.unsplash.com/photo-1587206668283-c21d974993c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    name: "Veggy Pasta",
-    image:
-      "https://images.unsplash.com/photo-1587206668283-c21d974993c3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-  }
-];
 
 app.get("/", (req, res) => {
   res.render("landing");
 });
 
-app.get("/recipes", (req, res) => {
-  
+app.get("/recipes", async(req, res) => {
+ try {
+  const recipes = await Recipes.find().lean()
   res.render("recipes", { recipes: recipes });
+ } catch (error) {
+   console.error(error)
+ } 
 });
 
 app.get('/recipes/new', (req,res) => {
   res.render('new')
 })
 
-app.post('/recipes', (req,res) => {
-  const newRecipe = {
-    name: req.body.name,
-    image: req.body.image
+app.post('/recipes', async(req,res) => {
+  try {
+    const newRecipe = {
+      name: req.body.name,
+      image: req.body.image
+    }
+
+    await Recipes.create(newRecipe)
+    res.redirect('/recipes')
+    
+  } catch (error) {
+    console.error(err);
   }
-  
-  recipes.push(newRecipe)
-  res.redirect('/recipes')
 
 })
 
