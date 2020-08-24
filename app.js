@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
   res.render("landing");
 });
 
+//INDEX - show all recipes
 app.get("/recipes", async(req, res) => {
  try {
   const recipes = await Recipes.find().lean()
@@ -33,15 +34,18 @@ app.get("/recipes", async(req, res) => {
  } 
 });
 
+//NEW - show form for adding new recipe
 app.get('/recipes/new', (req,res) => {
   res.render('new')
 })
 
+//POST - adding new recipe to DB
 app.post('/recipes', async(req,res) => {
   try {
     const newRecipe = {
       name: req.body.name,
-      image: req.body.image
+      image: req.body.image,
+      description: req.body.description
     }
 
     await Recipes.create(newRecipe)
@@ -51,6 +55,18 @@ app.post('/recipes', async(req,res) => {
     console.error(err);
   }
 
+})
+
+//SHOW - show info about particular recipe
+app.get('/recipes/:id', async(req,res) => {
+  try {
+    const recipe = await Recipes.findById({_id: req.params.id}).lean()
+
+    res.render('show', {recipe})
+    
+  } catch (error) {
+    console.error(error)
+  }
 })
 
 const PORT = process.env.PORT;
